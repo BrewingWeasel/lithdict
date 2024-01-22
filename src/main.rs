@@ -18,7 +18,7 @@ async fn get_def(word: web::Path<String>) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| App::new().service(get_def))
-        .bind(("127.0.0.1", 8080))?
+        .bind(("127.0.0.1", 8090))?
         .run()
         .await
 }
@@ -52,7 +52,7 @@ async fn get_def_conts(word: &str) -> String {
         return String::new();
     };
 
-    let result = client
+    client
         .get(format!(
             "https://ekalba.lt/action/vocabulary/record/{uuid}?viewType=64"
         ))
@@ -61,13 +61,15 @@ async fn get_def_conts(word: &str) -> String {
         .unwrap()
         .json::<Root>()
         .await
-        .unwrap();
+        .unwrap()
+        .details
+        .view_html
 
-    let html = result.details.view_html.as_bytes();
-    from_read(html, usize::max_value())
-        .lines()
-        .fold(String::new(), |mut acc, v| {
-            acc.push_str(v);
-            acc
-        })
+    // let html = result.details.view_html.as_bytes();
+    // from_read(html, usize::max_value())
+    //     .lines()
+    //     .fold(String::new(), |mut acc, v| {
+    //         acc.push_str(v);
+    //         acc
+    //     })
 }
